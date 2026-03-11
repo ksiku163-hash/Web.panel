@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "622047706059",
+    "firebase_url": "https://pista-2debe-default-rtdb.firebaseio.com",
+    "project_id": "pista-2debe",
+    "storage_bucket": "pista-2debe.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:622047706059:android:36ccdc7387778061c6944e",
+        "android_client_info": {
+          "package_name": "com.shadow.veer"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAflRQ0ecJelFoSW_uhFnSNdj-DSnmLp1M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

